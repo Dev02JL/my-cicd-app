@@ -19,7 +19,7 @@ export default function ImageCarousel() {
           setImages(data);
         }
       })
-      .catch((err) => console.error("Erreur chargement images :", err));
+      .catch((err) => console.error("Error while loading images :", err));
   }, []);
 
   return (
