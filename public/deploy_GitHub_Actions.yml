@@ -1,0 +1,46 @@
+name: Deploy Next.js App
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le déploiement sur chaque push sur `main`
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Ajouter la clé SSH privée et configurer SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 16.171.137.13 >> ~/.ssh/known_hosts  # Remplace par ton IP
+
+      - name: Vérifier la connexion SSH
+        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@16.171.137.13 "echo 'Connexion SSH réussie'"
+
+      - name: Corriger les permissions du dépôt
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@16.171.137.13 << 'EOF'
+          sudo chown -R ubuntu:ubuntu /home/ubuntu/my-awesome-projects
+          sudo chmod -R 755 /home/ubuntu/my-awesome-projects
+          EOF
+
+      - name: Déployer sur le serveur
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@16.171.137.13 << 'EOF'
+          cd /home/ubuntu/my-awesome-projects || git clone https://github.com/Dev02JL/my-awesome-projects.git /home/ubuntu/my-awesome-projects && cd /home/ubuntu/my-awesome-projects
+          git fetch origin main
+          git reset --hard origin/main
+          npm install
+          sudo chown -R ubuntu:ubuntu /home/ubuntu/my-awesome-projects/.next
+          sudo chmod -R 755 /home/ubuntu/my-awesome-projects/.next
+          npm run build
+          pm2 delete next-app || true
+          pm2 start npm --name "next-app" -- run start
+          pm2 save
+          EOF
