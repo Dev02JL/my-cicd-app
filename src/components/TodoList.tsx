@@ -25,13 +25,13 @@ export default function TodoList() {
       const data = await res.json();
       setTasks(data);
     } catch (err) {
-      console.error("Erreur lors du chargement des tâches :", err);
+      console.error("Error while loading tasks :", err);
     }
   }
 
   async function addTask() {
     if (!newTask.name.trim()) {
-      setError("Le nom de la tâche est requis");
+      setError("Task name required");
       return;
     }
   
@@ -47,15 +47,15 @@ export default function TodoList() {
   
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || "Erreur lors de l'ajout de la tâche");
+        throw new Error(errorData.error || "Error while adding task");
       }
   
       const addedTask = await res.json();
       setTasks([...tasks, addedTask]);
       setNewTask({ name: "", description: "" });
     } catch (err) {
-      console.error("Erreur lors de l'ajout :", err);
-      setError("Impossible d'ajouter la tâche");
+      console.error("Error while adding task :", err);
+      setError("Can't adding task, please try again later");
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ export default function TodoList() {
 
       setTasks(tasks.filter((task) => task.id !== id));
     } catch (err) {
-      console.error("Erreur lors de la suppression :", err);
+      console.error("Error while deleting task :", err);
     }
   }
 
@@ -99,7 +99,7 @@ export default function TodoList() {
           className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white px-4 py-2 rounded-md 
                      bg-[size:200%_200%] animate-color-shift hover:brightness-110 disabled:bg-gray-400"
         >
-          {loading ? "Ajout en cours..." : "➕ Add"}
+          {loading ? "Adding in progress..." : "➕ Add"}
         </button>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
