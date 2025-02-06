@@ -14,6 +14,7 @@ export async function GET() {
 
     return NextResponse.json(imageFiles);
   } catch (error) {
+    console.error("Erreur lors de la lecture des images :", error);
     return NextResponse.json({ error: "Could not read images" }, { status: 500 });
   }
 }

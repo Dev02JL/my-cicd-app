@@ -6,7 +6,7 @@ export async function GET() {
   return Response.json(tasks);
 }
 
-export async function POST(req) {
+export async function POST(req: Request) {
   const { name, description } = await req.json();
   if (!name) return Response.json({ error: "Le nom est requis" }, { status: 400 });
 
@@ -17,7 +17,7 @@ export async function POST(req) {
   return Response.json(newTask, { status: 201 });
 }
 
-export async function DELETE(req) {
+export async function DELETE(req: Request) {
   const { id } = await req.json();
   await prisma.task.delete({ where: { id: Number(id) } });
 

@@ -34,23 +34,27 @@ export default function TodoList() {
       setError("Le nom de la tâche est requis");
       return;
     }
-
+  
     setLoading(true);
     setError("");
-
+  
     try {
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTask),
       });
-
-      if (!res.ok) throw new Error("Erreur lors de l'ajout de la tâche");
-
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Erreur lors de l'ajout de la tâche");
+      }
+  
       const addedTask = await res.json();
       setTasks([...tasks, addedTask]);
       setNewTask({ name: "", description: "" });
     } catch (err) {
+      console.error("Erreur lors de l'ajout :", err);
       setError("Impossible d'ajouter la tâche");
     } finally {
       setLoading(false);
