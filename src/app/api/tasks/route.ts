@@ -8,7 +8,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const { name, description } = await req.json();
-  if (!name) return Response.json({ error: "Le nom est requis" }, { status: 400 });
+  if (!name) return Response.json({ error: "Name required" }, { status: 400 });
 
   const newTask = await prisma.task.create({
     data: { name, description: description || "" },
@@ -21,5 +21,5 @@ export async function DELETE(req: Request) {
   const { id } = await req.json();
   await prisma.task.delete({ where: { id: Number(id) } });
 
-  return Response.json({ message: "Tâche supprimée" });
+  return Response.json({ message: "Task deleted" });
 }
